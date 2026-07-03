@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('tbl_roles', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 50)->nullable();
+            $table->string('nombre', 50);
+            $table->string('guard_name', 50);
             $table->timestamps();
         });
     }

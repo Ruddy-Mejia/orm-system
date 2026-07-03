@@ -20,6 +20,7 @@ return new class extends Migration
             $table->float('stock_nuevo', 12, 4);
             
             $table->string('documento')->nullable();
+            $table->string('documento_path')->nullable();
             $table->string('observacion')->nullable();
             $table->unsignedBigInteger('usuario_id')->nullable();
             
@@ -40,7 +41,7 @@ return new class extends Migration
                   
             $table->foreign('usuario_id')
                   ->references('id')
-                  ->on('users')
+                  ->on('tbl_users')
                   ->onDelete('set null');
                   
             $table->foreign('bodega_origen_id')

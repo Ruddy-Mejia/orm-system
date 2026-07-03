@@ -47,8 +47,8 @@ class OrmView extends Component
     public function generarOC()
     {
 
-        if (empty($this->productosSeleccionados)) {
-            $this->dispatch('toastr', ['type' => 'error', 'message' => "Seleccione al menos un producto"]);
+        if (empty($this->productosSeleccionados)) {            
+            $this->dispatch('toast', type: 'error', message: "Seleccione al menos un producto");
             return;
         }
 
@@ -126,6 +126,10 @@ class OrmView extends Component
     }
     public function askReview($id)
     {
+        $orm = Orm::where('id', $id)->first();
+        $orm->status = !$orm->status;
+        $orm->save();        
+        $this->cargarDatosORM();
         $this->dispatch('toast', type: 'info', message: 'Se solicitó la revisión');
     }
 

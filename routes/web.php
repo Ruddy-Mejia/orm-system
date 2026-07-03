@@ -9,6 +9,7 @@ use App\Livewire\Bodega\Index;
 use App\Livewire\Bodega\Ingreso;
 use App\Livewire\Bodega\Traspaso;
 use App\Livewire\Bodega\Show;
+use App\Livewire\Dashboard;
 
 Route::view('/', 'welcome');
 
@@ -21,9 +22,7 @@ Route::middleware(['auth', 'active.user'])->group(function () {
         Route::get('/{bodega}', Show::class)->name('show');
     });
 
-    Route::get('/dashboard', function () {
-        return view('pages.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
     Route::view('profile', 'profile')
         ->name('profile');

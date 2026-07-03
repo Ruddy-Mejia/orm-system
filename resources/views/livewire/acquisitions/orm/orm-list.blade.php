@@ -18,7 +18,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th wire:click="sortBy('orm')" class="px-6 py-3 text-left cursor-pointer hover:bg-gray-100">
+                    <th wire:click="sortBy('id')" class="px-6 py-3 text-left cursor-pointer hover:bg-gray-100">
                         ORM
                         @if ($sortField == 'orm')
                             <span class="ml-1">{{ $sortDirection == 'asc' ? '↑' : '↓' }}</span>
@@ -28,6 +28,9 @@
                     <th class="px-6 py-3 text-left">Responsable</th>
                     <th wire:click="sortBy('created_at')" class="px-6 py-3 text-left cursor-pointer hover:bg-gray-100">
                         Fecha
+                        @if ($sortField == 'created_at')
+                            <span class="ml-1">{{ $sortDirection == 'asc' ? '↑' : '↓' }}</span>
+                        @endif
                     </th>
                     <th class="px-6 py-3 text-left">¿En atención?</th>
                     <th class="px-6 py-3 text-left">Tipo</th>

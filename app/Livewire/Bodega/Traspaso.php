@@ -62,8 +62,8 @@ class Traspaso extends Component
         if (count($this->productos) > 1) {
             unset($this->productos[$index]);
             $this->productos = array_values($this->productos);
-        } else {
-            $this->dispatch('error', 'Debe tener al menos un producto');
+        } else {            
+            $this->dispatch('toast', type: 'error', message: "Debe tener al menos un producto");
         }
     }
 
@@ -79,7 +79,7 @@ class Traspaso extends Component
     {
         // Validar que no sea la misma
         if ($this->bodega_origen_id == $this->bodega_destino_id) {
-            $this->dispatch('error', 'Las bodegas de origen y destino deben ser diferentes');
+            $this->dispatch('toast', type: 'error', message: "Las bodegas de origen y destino deben ser diferentes");
             $this->bodega_destino_id = null;
         }
     }
@@ -137,7 +137,7 @@ class Traspaso extends Component
                 ->first();
             
             if (!$stock || $stock->cantidad < $item['cantidad']) {
-                $this->dispatch('error', "Stock insuficiente para el producto seleccionado. Disponible: " . ($stock ? $stock->cantidad : 0));
+                $this->dispatch('toast', type: 'error', message: "Stock insuficiente para el producto seleccionado. Disponible: " . ($stock ? $stock->cantidad : 0));
                 return;
             }
         }
@@ -211,16 +211,14 @@ class Traspaso extends Component
             // Resetear formulario
             $this->reset(['bodega_origen_id', 'bodega_destino_id', 'observacion', 'productos']);
             $this->agregarProducto();
-            $this->productosOrigen = [];
-            
-            $this->dispatch('success', 'Traspaso realizado exitosamente');
-            $this->dispatch('traspaso-registrado');
+            $this->productosOrigen = [];            
+            $this->dispatch('toast', type: 'success', message: 'Traspaso realizado exitosamente');
             
         } catch (\Exception $e) {
             DB::rollBack();
             $this->isLoading = false;
             
-            $this->dispatch('error', 'Error al realizar el traspaso: ' . $e->getMessage());
+            $this->dispatch('toast', type: 'error', message: 'Error al realizar el traspaso: ' . $e->getMessage());
         }
     }
 

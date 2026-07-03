@@ -12,7 +12,6 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Layout;
 
 #[Layout('layouts.app')]
@@ -27,10 +26,12 @@ class Ingreso extends Component
     public $factura;
     public $productos = [];
     public $bodegas = [];
-    public $productosDisponibles = [];
-    
-    // Para controlar el estado de la carga
     public $isLoading = false;
+
+    // Propiedades para el autocomplete de productos
+    public $producto_busqueda = '';
+    public $productos_sugeridos = [];
+    public $mostrar_sugerencias_producto = false;
 
     protected $rules = [
         'bodega_id' => 'required|exists:tbl_bodegas,id',
@@ -53,61 +54,139 @@ class Ingreso extends Component
     public function mount()
     {
         $this->bodegas = Bodega::all();
-        $this->productosDisponibles = Producto::where('status', 'activo')->get();
         $this->agregarProducto();
+    }
+
+    /**
+     * Se ejecuta automáticamente cuando cambia producto_busqueda
+     */
+    public function updatedProductoBusqueda($value)
+    {            
+        if (strlen(trim($value)) < 2) {
+            $this->productos_sugeridos = [];
+            $this->mostrar_sugerencias_producto = false;
+            return;
+        }
+
+        $this->productos_sugeridos = Producto::where('nombre', 'like', '%' . $value . '%')
+            ->limit(10)
+            ->get();
+
+        $this->mostrar_sugerencias_producto = !empty($this->productos_sugeridos);
+    }
+
+    /**
+     * Abrir sugerencias al hacer focus
+     */
+    public function abrirSugerenciasProducto()
+    {
+        if (strlen(trim($this->producto_busqueda)) >= 2) {
+            $this->updatedProductoBusqueda($this->producto_busqueda);
+        }
+    }
+
+    /**
+     * Cerrar sugerencias al perder el foco
+     */
+    public function cerrarSugerenciasProducto()
+    {
+        // Pequeño retraso para permitir que el click en la sugerencia se procese
+        $this->mostrar_sugerencias_producto = false;
+        $this->productos_sugeridos = [];
+    }
+
+    /**
+     * Seleccionar un producto de las sugerencias
+     */
+    public function seleccionarProducto($index, $productoId)
+    {
+        $producto = Producto::find($productoId);
+        if ($producto) {
+            $this->productos[$index]['producto_id'] = $producto->id;
+            $this->productos[$index]['nombre_producto'] = $producto->nombre;
+
+            // Limpiar búsqueda
+            $this->producto_busqueda = '';
+            $this->productos_sugeridos = [];
+            $this->mostrar_sugerencias_producto = false;
+        }
+    }
+
+    /**
+     * Quitar el producto seleccionado
+     */
+    public function quitarProductoSeleccionado($index)
+    {
+        $this->productos[$index]['producto_id'] = '';
+        $this->productos[$index]['nombre_producto'] = '';
+        $this->producto_busqueda = '';
+        $this->productos_sugeridos = [];
+        $this->mostrar_sugerencias_producto = false;
     }
 
     public function agregarProducto()
     {
         $this->productos[] = [
             'producto_id' => '',
-            'cantidad' => null
+            'cantidad' => null,
+            'nombre_producto' => ''
         ];
     }
 
     public function eliminarProducto($index)
     {
-        if (count($this->productos) > 1) {
+        if (isset($this->productos[$index])) {
+            if (count($this->productos) <= 1) {
+                $this->dispatch('toast', type: 'error', message: 'Debe tener al menos un producto');
+                return;
+            }
+
             unset($this->productos[$index]);
             $this->productos = array_values($this->productos);
-        } else {                
-            $this->dispatch('toast', type: 'error', message: 'Debe tener al menos un producto');
         }
     }
 
     public function updatedBodegaId()
     {
-        // Resetear productos cuando cambia la bodega
         $this->productos = [];
         $this->agregarProducto();
     }
+
+
+
+    // ============ GUARDAR ============
 
     public function save()
     {
         $this->validate();
 
+        // Verificar que todos los productos tengan ID
+        foreach ($this->productos as $item) {
+            if (empty($item['producto_id'])) {
+                $this->dispatch('toast', type: 'error', message: 'Todos los productos deben estar seleccionados correctamente');
+                return;
+            }
+        }
+
         $this->isLoading = true;
 
         DB::beginTransaction();
-        
+
         try {
             $facturaPath = null;
-            
-            // Guardar factura si se adjuntó
+
             if ($this->factura) {
                 $facturaPath = $this->factura->store('facturas', 'public');
             }
 
-            // Procesar cada producto
             foreach ($this->productos as $item) {
                 $bodegaProducto = BodegaProducto::where('bodega', $this->bodega_id)
                     ->where('producto', $item['producto_id'])
                     ->first();
-                
+
                 $stockAnterior = $bodegaProducto ? $bodegaProducto->cantidad : 0;
                 $nuevaCantidad = $stockAnterior + $item['cantidad'];
-                
-                // Actualizar o crear el registro en tbl_bodega_producto
+
                 if ($bodegaProducto) {
                     $bodegaProducto->update(['cantidad' => $nuevaCantidad]);
                 } else {
@@ -117,8 +196,7 @@ class Ingreso extends Component
                         'cantidad' => $nuevaCantidad
                     ]);
                 }
-                
-                // Registrar movimiento
+
                 MovimientoBodega::create([
                     'bodega_id' => $this->bodega_id,
                     'producto_id' => $item['producto_id'],
@@ -127,30 +205,28 @@ class Ingreso extends Component
                     'stock_anterior' => $stockAnterior,
                     'stock_nuevo' => $nuevaCantidad,
                     'documento' => $this->documento,
+                    'documento_path' => $facturaPath,
                     'observacion' => $this->observacion,
                     'usuario_id' => Auth::id(),
                     'bodega_origen_id' => null,
                     'bodega_destino_id' => null
                 ]);
             }
-            
+
             DB::commit();
-            
+
             $this->isLoading = false;
-            
-            // Resetear formulario
-            $this->reset(['bodega_id', 'documento', 'observacion', 'factura', 'productos']);
-            $this->agregarProducto();            
-            $this->dispatch('toast', type: 'success', message: 'Ingreso de productos registrado exitosamente');
-            
+
+            $this->reset(['bodega_id', 'documento', 'observacion', 'factura', 'productos', 'producto_busqueda']);
+            $this->agregarProducto();
+            $this->dispatch('toast', type: 'success', message: 'Ingreso de productos registrado exitosamente', route: route('bodegas.index'));
         } catch (\Exception $e) {
             DB::rollBack();
             $this->isLoading = false;
-            
-            // Eliminar factura si se guardó
+
             if (isset($facturaPath)) {
                 Storage::disk('public')->delete($facturaPath);
-            }            
+            }
             $this->dispatch('toast', type: 'error', message: 'Error al registrar el ingreso: ' . $e->getMessage());
         }
     }

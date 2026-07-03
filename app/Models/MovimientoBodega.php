@@ -20,6 +20,7 @@ class MovimientoBodega extends Model
         'stock_anterior',
         'stock_nuevo',
         'documento',
+        'documento_path',
         'observacion',
         'usuario_id',
         'bodega_origen_id',

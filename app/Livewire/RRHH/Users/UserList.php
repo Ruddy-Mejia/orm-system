@@ -200,17 +200,17 @@ class UserList extends Component
                     $data['password'] = Hash::make($this->password);
                 }
                 User::where('id', $this->userId)->update($data);
-                $this->dispatch('toastr', ['type' => 'success', 'message' => 'Usuario actualizado correctamente']);
+                $this->dispatch('toast', type: 'success', message: 'Usuario actualizado correctamente');
             } else {
                 // Crear
                 $data['password'] = Hash::make($this->password);
                 User::create($data);
-                $this->dispatch('toastr', ['type' => 'success', 'message' => 'Usuario creado correctamente']);
+                $this->dispatch('toast', type: 'success', message: 'Usuario creado correctamente');
             }
 
             $this->closeModal();
         } catch (\Exception $e) {
-            $this->dispatch('toastr', ['type' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+            $this->dispatch('toast', type: 'error', message: 'Error: ' . $e->getMessage());
         }
     }
 
@@ -221,7 +221,7 @@ class UserList extends Component
             $user->status = !$user->status;
             $user->save();
             $statusText = $user->status ? 'activado' : 'desactivado';
-            $this->dispatch('toastr', ['type' => 'success', 'message' => "Usuario {$statusText} correctamente"]);
+            $this->dispatch('toast', type: 'success', message: "Usuario {$statusText} correctamente");
         }
     }
 
@@ -231,7 +231,7 @@ class UserList extends Component
         if ($user) {
             $name = $user->name;
             $user->delete();
-            $this->dispatch('toastr', ['type' => 'success', 'message' => "Usuario {$name} eliminado correctamente"]);
+            $this->dispatch('toast', type: 'success', message: "Usuario {$name} eliminado correctamente");
         }
     }
 

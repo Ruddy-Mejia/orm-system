@@ -218,7 +218,7 @@ class OrmCreate extends Component
 
             DB::commit();
             
-            $this->dispatch('toast', type: 'success', message: 'ORM creado exitosamente con número: ' . $numeroOrm ,route: route('view', $numeroOrm));              
+            $this->dispatch('toast', type: 'success', message: 'ORM creado exitosamente con número: ' . $numeroOrm);              
 
             // return redirect()->route('view', $numeroOrm);//<---------------------------------
 

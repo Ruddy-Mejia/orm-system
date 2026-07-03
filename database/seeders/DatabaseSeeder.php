@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
             BodegaProductoSeeder::class,
             OrmSeeder::class,
             DetOrmSeeder::class,
-            OCSeeder::class
+            OCSeeder::class,
+            MovimientoBodegaSeeder::class
         ]);
     }
 }
