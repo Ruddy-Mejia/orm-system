@@ -9,13 +9,6 @@
                     <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
                     <p class="text-gray-600">Resumen general del sistema</p>
                 </div>
-                <div class="flex gap-2">
-                    <select wire:model.live="filtroAnio" class="rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        @foreach($anios as $anio)
-                            <option value="{{ $anio }}">{{ $anio }}</option>
-                        @endforeach
-                    </select>
-                </div>
             </div>
 
             {{-- Cards de resumen --}}
@@ -242,11 +235,14 @@
 <script>
     var graficasInicializadas = false;
     var charts = {};
+    var dashboardInterval = null;
 
     function destruirGraficas() {
         for (var key in charts) {
             if (charts[key]) {
-                charts[key].destroy();
+                try {
+                    charts[key].destroy();
+                } catch(e) {}
                 charts[key] = null;
             }
         }
@@ -279,360 +275,366 @@
 
     function iniciarGraficas(canvas) {
         if (typeof Chart === 'undefined') {
+            console.warn('Chart.js no está cargado');
             return;
         }
 
-        // 1. MOVIMIENTOS POR TIPO
-        if (canvas.movimientos) {
-            const data = [
-                {{ $movimientosPorTipo['ingreso'] ?? 0 }},
-                {{ $movimientosPorTipo['egreso'] ?? 0 }},
-                {{ ($movimientosPorTipo['traspaso_salida'] ?? 0) + ($movimientosPorTipo['traspaso_entrada'] ?? 0) }}
-            ];
-            
-            if (data.some(v => v > 0)) {
-                charts.movimientos = new Chart(canvas.movimientos.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Ingresos', 'Egresos', 'Traspasos'],
-                        datasets: [{
-                            data: data,
-                            backgroundColor: ['#10b981', '#ef4444', '#3b82f6'],
-                            borderWidth: 2,
-                            borderColor: '#ffffff'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 20,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
-                            }
+        try {
+            // 1. MOVIMIENTOS POR TIPO
+            if (canvas.movimientos) {
+                const data = [
+                    {{ $movimientosPorTipo['ingreso'] ?? 0 }},
+                    {{ $movimientosPorTipo['egreso'] ?? 0 }},
+                    {{ ($movimientosPorTipo['traspaso_salida'] ?? 0) + ($movimientosPorTipo['traspaso_entrada'] ?? 0) }}
+                ];
+                
+                if (data.some(v => v > 0)) {
+                    charts.movimientos = new Chart(canvas.movimientos.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Ingresos', 'Egresos', 'Traspasos'],
+                            datasets: [{
+                                data: data,
+                                backgroundColor: ['#10b981', '#ef4444', '#3b82f6'],
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
+                            }]
                         },
-                        cutout: '60%'
-                    }
-                });
-            }
-        }
-
-        // 2. PRODUCTOS POR BODEGA
-        if (canvas.bodegas) {
-            const labels = {!! json_encode($bodegasLabels) !!};
-            const data = {!! json_encode($bodegasData) !!};
-            
-            if (data.length > 0 && data.some(v => v > 0)) {
-                charts.bodegas = new Chart(canvas.bodegas.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Productos en stock',
-                            data: data,
-                            backgroundColor: '#3b82f6',
-                            borderRadius: 5,
-                            borderColor: '#2563eb',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 20,
+                                        usePointStyle: true,
+                                        pointStyle: 'circle'
+                                    }
                                 }
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        // 3. ESTADO DE OC
-        if (canvas.ocStatus) {
-            const labels = {!! json_encode(array_keys($ocPorStatus)) !!};
-            const data = {!! json_encode(array_values($ocPorStatus)) !!};
-            
-            if (data.length > 0 && data.some(v => v > 0)) {
-                charts.ocStatus = new Chart(canvas.ocStatus.getContext('2d'), {
-                    type: 'pie',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: data,
-                            backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899'],
-                            borderWidth: 2,
-                            borderColor: '#ffffff'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 20,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
-                            }
-                        },
-                        cutout: '50%'
-                    }
-                });
-            }
-        }
-
-        // 4. ESTADO DE ORM
-        if (canvas.ormStatus) {
-            const labels = {!! json_encode(array_keys($ormPorStatus)) !!};
-            const data = {!! json_encode(array_values($ormPorStatus)) !!};
-            
-            if (data.length > 0 && data.some(v => v > 0)) {
-                charts.ormStatus = new Chart(canvas.ormStatus.getContext('2d'), {
-                    type: 'pie',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: data,
-                            backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899'],
-                            borderWidth: 2,
-                            borderColor: '#ffffff'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 20,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
-                            }
-                        },
-                        cutout: '50%'
-                    }
-                });
-            }
-        }
-
-        // 5. TENDENCIA
-        if (canvas.tendencia) {
-            const labels = {!! json_encode($mesesLabels) !!};
-            const data = {!! json_encode($movimientosMensuales) !!};
-            
-            if (data.length > 0 && data.some(v => v > 0)) {
-                charts.tendencia = new Chart(canvas.tendencia.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Movimientos',
-                            data: data,
-                            borderColor: '#6366f1',
-                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: '#6366f1',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2,
-                            pointRadius: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        // 6. EVOLUCIÓN OC
-        if (canvas.oc) {
-            const labels = {!! json_encode($mesesLabels) !!};
-            const data = {!! json_encode($ocMensual) !!};
-            
-            if (data.length > 0 && data.some(v => v > 0)) {
-                charts.oc = new Chart(canvas.oc.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Monto OC ($)',
-                            data: data,
-                            borderColor: '#f59e0b',
-                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: '#f59e0b',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2,
-                            pointRadius: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
                             },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return '$' + context.parsed.y.toLocaleString();
-                                    }
-                                }
-                            }
+                            cutout: '60%'
+                        }
+                    });
+                }
+            }
+
+            // 2. PRODUCTOS POR BODEGA
+            if (canvas.bodegas) {
+                const labels = {!! json_encode($bodegasLabels) !!};
+                const data = {!! json_encode($bodegasData) !!};
+                
+                if (data.length > 0 && data.some(v => v > 0)) {
+                    charts.bodegas = new Chart(canvas.bodegas.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Productos en stock',
+                                data: data,
+                                backgroundColor: '#3b82f6',
+                                borderRadius: 5,
+                                borderColor: '#2563eb',
+                                borderWidth: 1
+                            }]
                         },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value) {
-                                        return '$' + value.toLocaleString();
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
                                     }
                                 }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
-        }
 
-        // 7. CATEGORÍAS
-        if (canvas.categoria) {
-            const labels = {!! json_encode(array_column($productosPorCategoria, 'nombre')) !!};
-            const data = {!! json_encode(array_column($productosPorCategoria, 'total')) !!};
-            
-            if (data.length > 0 && data.some(v => v > 0)) {
-                const colores = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#6366f1', '#14b8a6', '#f97316', '#8b5cf6'];
-                charts.categoria = new Chart(canvas.categoria.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Productos',
-                            data: data,
-                            backgroundColor: colores.slice(0, data.length),
-                            borderRadius: 5,
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
+            // 3. ESTADO DE OC
+            if (canvas.ocStatus) {
+                const labels = {!! json_encode(array_keys($ocPorStatus)) !!};
+                const data = {!! json_encode(array_values($ocPorStatus)) !!};
+                
+                if (data.length > 0 && data.some(v => v > 0)) {
+                    charts.ocStatus = new Chart(canvas.ocStatus.getContext('2d'), {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: data,
+                                backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899'],
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
+                            }]
                         },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 20,
+                                        usePointStyle: true,
+                                        pointStyle: 'circle'
+                                    }
+                                }
+                            },
+                            cutout: '50%'
+                        }
+                    });
+                }
+            }
+
+            // 4. ESTADO DE ORM
+            if (canvas.ormStatus) {
+                const labels = {!! json_encode(array_keys($ormPorStatus)) !!};
+                const data = {!! json_encode(array_values($ormPorStatus)) !!};
+                
+                if (data.length > 0 && data.some(v => v > 0)) {
+                    charts.ormStatus = new Chart(canvas.ormStatus.getContext('2d'), {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: data,
+                                backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899'],
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 20,
+                                        usePointStyle: true,
+                                        pointStyle: 'circle'
+                                    }
+                                }
+                            },
+                            cutout: '50%'
+                        }
+                    });
+                }
+            }
+
+            // 5. TENDENCIA
+            if (canvas.tendencia) {
+                const labels = {!! json_encode($mesesLabels) !!};
+                const data = {!! json_encode($movimientosMensuales) !!};
+                
+                if (data.length > 0 && data.some(v => v > 0)) {
+                    charts.tendencia = new Chart(canvas.tendencia.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Movimientos',
+                                data: data,
+                                borderColor: '#6366f1',
+                                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#6366f1',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2,
+                                pointRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
+                                    }
                                 }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
-        }
 
-        graficasInicializadas = true;
+            // 6. EVOLUCIÓN OC
+            if (canvas.oc) {
+                const labels = {!! json_encode($mesesLabels) !!};
+                const data = {!! json_encode($ocMensual) !!};
+                
+                if (data.length > 0 && data.some(v => v > 0)) {
+                    charts.oc = new Chart(canvas.oc.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Monto OC ($)',
+                                data: data,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#f59e0b',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2,
+                                pointRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return '$' + context.parsed.y.toLocaleString();
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '$' + value.toLocaleString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // 7. CATEGORÍAS
+            if (canvas.categoria) {
+                const labels = {!! json_encode(array_column($productosPorCategoria, 'nombre')) !!};
+                const data = {!! json_encode(array_column($productosPorCategoria, 'total')) !!};
+                
+                if (data.length > 0 && data.some(v => v > 0)) {
+                    const colores = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#6366f1', '#14b8a6', '#f97316', '#8b5cf6'];
+                    charts.categoria = new Chart(canvas.categoria.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Productos',
+                                data: data,
+                                backgroundColor: colores.slice(0, data.length),
+                                borderRadius: 5,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            graficasInicializadas = true;
+        } catch (error) {
+            console.error('Error al iniciar gráficas:', error);
+        }
     }
 
-    // INICIALIZACIÓN
-    document.addEventListener('livewire:initialized', function() {
-        let intentos = 0;
-        const maxIntentos = 10;
-        
-        if (window.dashboardInterval) {
-            clearInterval(window.dashboardInterval);
+    function iniciarGraficasConRetraso() {
+        // Limpiar intervalos anteriores
+        if (dashboardInterval) {
+            clearInterval(dashboardInterval);
+            dashboardInterval = null;
         }
-        
-        window.dashboardInterval = setInterval(function() {
-            intentos++;
-            const listo = esperarElementos();
-            
-            if (listo || intentos >= maxIntentos) {
-                clearInterval(window.dashboardInterval);
-                window.dashboardInterval = null;
-            }
-        }, 300);
-    });
 
-    document.addEventListener('livewire:update', function() {
+        // Destruir gráficas existentes
         destruirGraficas();
-        
-        if (window.dashboardInterval) {
-            clearInterval(window.dashboardInterval);
-            window.dashboardInterval = null;
-        }
-        
+
         let intentos = 0;
-        const maxIntentos = 10;
+        const maxIntentos = 15;
         
-        window.dashboardInterval = setInterval(function() {
+        dashboardInterval = setInterval(function() {
             intentos++;
             const listo = esperarElementos();
             
             if (listo || intentos >= maxIntentos) {
-                clearInterval(window.dashboardInterval);
-                window.dashboardInterval = null;
+                clearInterval(dashboardInterval);
+                dashboardInterval = null;
             }
-        }, 300);
+        }, 200);
+    }
+
+    // INICIALIZACIÓN PRINCIPAL
+    document.addEventListener('livewire:initialized', function() {
+        setTimeout(iniciarGraficasConRetraso, 100);
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-            const canvas = {
-                movimientos: document.getElementById('movimientosChart'),
-                bodegas: document.getElementById('bodegasChart'),
-                ocStatus: document.getElementById('ocStatusChart'),
-                ormStatus: document.getElementById('ormStatusChart'),
-                tendencia: document.getElementById('tendenciaChart'),
-                oc: document.getElementById('ocChart'),
-                categoria: document.getElementById('categoriaChart')
-            };
-            const existentes = Object.values(canvas).filter(el => el !== null);
-            if (existentes.length === 7) {
-                if (graficasInicializadas) {
-                    destruirGraficas();
-                }
-                iniciarGraficas(canvas);
-            }
-        }, 100);
+    // Cuando Livewire actualiza el DOM (navegación, updates)
+    document.addEventListener('livewire:navigated', function() {
+        iniciarGraficasConRetraso();
     });
+
+    // Cuando Livewire hace un update del componente
+    document.addEventListener('livewire:update', function() {
+        iniciarGraficasConRetraso();
+    });
+
+    // Cuando se completa un request de Livewire
+    document.addEventListener('livewire:request-finished', function() {
+        setTimeout(iniciarGraficasConRetraso, 100);
+    });
+
+    // DOMContentLoaded (fallback)
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(iniciarGraficasConRetraso, 100);
+    });
+
+    // MutationObserver para detectar cambios en el DOM
+    if (window.MutationObserver) {
+        const observer = new MutationObserver(function(mutations) {
+            const canvas = document.getElementById('movimientosChart');
+            if (canvas && !graficasInicializadas) {
+                iniciarGraficasConRetraso();
+            }
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
 </script>

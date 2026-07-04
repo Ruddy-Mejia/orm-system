@@ -45,18 +45,15 @@ class Dashboard extends Component
     public $topProductos = [];
     public $topProveedores = [];
 
-    // Filtros
-    public $filtroAnio = null;
-    public $filtroMes = null;
-
     public function mount()
     {
-        $this->filtroAnio = Carbon::now()->year;
         $this->cargarDatos();
     }
 
     public function cargarDatos()
     {
+        $anioActual = Carbon::now()->year;
+
         // ============ TOTALES ============
         $this->totalProductos = Producto::count();
         $this->totalBodegas = Bodega::count();
@@ -184,7 +181,7 @@ class Dashboard extends Component
         $this->bodegasLabels = $bodegas->pluck('nombre')->toArray();
         $this->bodegasData = $bodegas->pluck('total_productos')->toArray();
 
-        // ============ MOVIMIENTOS MENSUALES ============
+        // ============ MOVIMIENTOS MENSUALES (ÚLTIMOS 12 MESES) ============
         $meses = collect(range(11, 0))->map(function ($i) {
             return Carbon::now()->subMonths($i);
         });
@@ -207,15 +204,8 @@ class Dashboard extends Component
         })->toArray();
     }
 
-    public function updatedFiltroAnio()
-    {
-        $this->cargarDatos();
-    }
-
     public function render()
     {
-        return view('livewire.dashboard', [
-            'anios' => range(Carbon::now()->year - 5, Carbon::now()->year),
-        ]);
+        return view('livewire.dashboard');
     }
 }
