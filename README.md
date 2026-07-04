@@ -21,7 +21,7 @@ Sistema de gestión para órdenes de compra, recepción de mercancía, bodegas, 
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/tu-usuario/orm-system.git
+git clone https://github.com/Ruddy-Mejia/orm-system.git
 cd orm-system
 
 # Instalar dependencias PHP
