@@ -71,7 +71,7 @@
                 </thead>
                 <tbody>
                     @forelse($users as $user)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50" wire:key="user-{{ $user->id }}">
                             <td class="px-4 py-3 border-b">
                                 <div class="flex items-center gap-3">
                                     @if($user->foto_perfil)
@@ -189,20 +189,6 @@
                                         <input type="checkbox" wire:model="status" class="mr-2">
                                         <span class="text-sm font-medium text-gray-700">Usuario activo</span>
                                     </label>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Foto de perfil</label>
-                                    <input type="file" wire:model="foto_perfil" class="w-full">
-                                    <div wire:loading wire:target="foto_perfil" class="text-sm text-gray-500">Subiendo...</div>
-                                    @error('foto_perfil') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Firma</label>
-                                    <input type="file" wire:model="firma" class="w-full">
-                                    <div wire:loading wire:target="firma" class="text-sm text-gray-500">Subiendo...</div>
-                                    @error('firma') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                 </div>
                             </div>
                         </div>

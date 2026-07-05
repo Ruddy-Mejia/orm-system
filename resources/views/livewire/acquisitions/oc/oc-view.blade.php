@@ -183,14 +183,14 @@
                         </table>
                     </div>
                 </div>
-
+{{-- 
                 <!-- Autorizaciones -->
                 @php 
                     $autorizaciones = is_array($oc->autorizaciones) ? $oc->autorizaciones : json_decode($oc->autorizaciones, true);
                     $autorizaciones = $autorizaciones ?? [0, 0, 0];
                     $keys = ['Gerencia', 'Jefe de costos', 'Adquisiciones'];
-                @endphp
-                <div class="mb-8">
+                @endphp --}}
+                {{-- <div class="mb-8">
                     <h2 class="text-xl font-bold mb-4 border-b pb-2">Autorizaciones</h2>
                     <div class="flex flex-wrap gap-2">
                         @foreach($autorizaciones as $index => $valor)
@@ -202,7 +202,7 @@
                             </div>
                         @endforeach
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Observación -->
                 @if ($oc->observacion)

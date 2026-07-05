@@ -15,6 +15,13 @@ class UserSeeder extends Seeder
 
         $usuarios = [
             [
+                'name' => 'Sin asignar',
+                'email' => 'comprador@sistema.com',
+                'password' => 'comprador123',
+                'status' => true,
+                'rol' => 'Comprador',
+            ],
+            [
                 'name' => 'Administrador',
                 'email' => 'rmejiam.dev@gmail.com',
                 'password' => '12345678',
@@ -22,11 +29,25 @@ class UserSeeder extends Seeder
                 'rol' => 'Administrador',
             ],
             [
-                'name' => 'Sin asignar',
-                'email' => 'comprador@sistema.com',
-                'password' => 'comprador123',
+                'name' => 'Luis Meza',
+                'email' => 'comprador@example.com',
+                'password' => '12345678',
                 'status' => true,
                 'rol' => 'Comprador',
+            ],
+            [
+                'name' => 'Carla López',
+                'email' => 'jefebodega@example.com',
+                'password' => '12345678',
+                'status' => true,
+                'rol' => 'Jefe de Bodega',
+            ],
+            [
+                'name' => 'Daniel Torres',
+                'email' => 'user@example.com',
+                'password' => '12345678',
+                'status' => true,
+                'rol' => 'Perfil básico',
             ],
         ];
 

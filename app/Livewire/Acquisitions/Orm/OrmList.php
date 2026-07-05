@@ -5,7 +5,9 @@ namespace App\Livewire\Acquisitions\Orm;
 use App\Models\Orm;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class OrmList extends Component
 {
     use WithPagination;
@@ -18,7 +20,7 @@ class OrmList extends Component
     public $fecha_hasta = '';
 
     // Ordenamiento
-    public $sortField = 'orm';
+    public $sortField = 'id';
     public $sortDirection = 'desc';
 
     protected $queryString = ['search', 'estatus', 'sortField', 'sortDirection'];

@@ -309,7 +309,7 @@
 
                 {{-- Footer con botones --}}
                 <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3">
-                    <a href="{{ route('orm') }}"
+                    <a href="{{ route('orm.index') }}"
                         class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded transition">
                         Cancelar
                     </a>

@@ -206,7 +206,7 @@ class OcCreate extends Component
             DB::commit();
             $this->dispatch('toast', type: 'success', message: "Orden de Compra creada exitosamente: {$numeroOc}");            
 
-            return redirect()->route('oc.view', $numeroOc);
+            return redirect()->route('oc.show', $numeroOc);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error al crear OC: ' . $e->getMessage());            

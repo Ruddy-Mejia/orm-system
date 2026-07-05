@@ -1,56 +1,57 @@
-{{-- resources/views/livewire/dashboard.blade.php --}}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gray-800 text-white px-6 py-4">
+            <h1 class="text-2xl font-bold">Dashboard</h1>
+            <p class="text-gray-300 text-sm">Resumen general del sistema</p>
+        </div>
 
-<div>
-    <div class="py-4">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Header --}}
-            <div class="mb-6 flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
-                    <p class="text-gray-600">Resumen general del sistema</p>
-                </div>
-            </div>
-
+        <div class="p-6">
             {{-- Cards de resumen --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-200">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Total Productos</p>
                             <p class="text-2xl font-bold text-gray-800">{{ number_format($totalProductos) }}</p>
                         </div>
                         <div class="bg-blue-100 rounded-full p-3">
-                            <i class="fas fa-boxes text-blue-600 text-xl"></i>
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-200">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Total Bodegas</p>
                             <p class="text-2xl font-bold text-gray-800">{{ number_format($totalBodegas) }}</p>
                         </div>
                         <div class="bg-green-100 rounded-full p-3">
-                            <i class="fas fa-warehouse text-green-600 text-xl"></i>
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-200">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Total ORM</p>
                             <p class="text-2xl font-bold text-gray-800">{{ number_format($totalOrm) }}</p>
-                            <p class="text-xs text-gray-400">Monto total: ${{ number_format($montoTotalOrm, 0, ',', '.') }}</p>
                         </div>
                         <div class="bg-purple-100 rounded-full p-3">
-                            <i class="fas fa-file-alt text-purple-600 text-xl"></i>
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-200">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Total OC</p>
@@ -58,7 +59,9 @@
                             <p class="text-xs text-gray-400">Monto total: ${{ number_format($montoTotalOc, 0, ',', '.') }}</p>
                         </div>
                         <div class="bg-yellow-100 rounded-full p-3">
-                            <i class="fas fa-shopping-cart text-yellow-600 text-xl"></i>
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -66,50 +69,58 @@
 
             {{-- Cards adicionales --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Proveedores</p>
                             <p class="text-2xl font-bold text-gray-800">{{ number_format($totalProveedores) }}</p>
                         </div>
                         <div class="bg-indigo-100 rounded-full p-3">
-                            <i class="fas fa-truck text-indigo-600 text-xl"></i>
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Categorías</p>
                             <p class="text-2xl font-bold text-gray-800">{{ number_format($totalCategorias) }}</p>
                         </div>
                         <div class="bg-pink-100 rounded-full p-3">
-                            <i class="fas fa-tags text-pink-600 text-xl"></i>
+                            <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Promedio OC</p>
                             <p class="text-2xl font-bold text-gray-800">${{ number_format($promedioOc, 0, ',', '.') }}</p>
                         </div>
                         <div class="bg-teal-100 rounded-full p-3">
-                            <i class="fas fa-calculator text-teal-600 text-xl"></i>
+                            <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-6 3v-3m-6 3V9a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Movimientos Totales</p>
                             <p class="text-2xl font-bold text-gray-800">{{ array_sum($movimientosPorTipo) }}</p>
                         </div>
                         <div class="bg-orange-100 rounded-full p-3">
-                            <i class="fas fa-exchange-alt text-orange-600 text-xl"></i>
+                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -117,14 +128,14 @@
 
             {{-- Gráficos principales --}}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Movimientos por Tipo</h3>
                     <div style="position: relative; height: 250px; width: 100%;">
                         <canvas id="movimientosChart"></canvas>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Productos por Bodega</h3>
                     <div style="position: relative; height: 250px; width: 100%;">
                         <canvas id="bodegasChart"></canvas>
@@ -134,7 +145,7 @@
 
             {{-- Gráfico de tendencia --}}
             <div class="grid grid-cols-1 gap-6 mb-6">
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Evolución Mensual</h3>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div>
@@ -155,14 +166,14 @@
 
             {{-- Gráficos secundarios --}}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Estado de Órdenes de Compra</h3>
                     <div style="position: relative; height: 250px; width: 100%;">
                         <canvas id="ocStatusChart"></canvas>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Estado de ORM</h3>
                     <div style="position: relative; height: 250px; width: 100%;">
                         <canvas id="ormStatusChart"></canvas>
@@ -172,7 +183,7 @@
 
             {{-- Top proveedores y productos --}}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Top 5 Proveedores</h3>
                     <div class="space-y-3">
                         @forelse($topProveedores as $proveedor)
@@ -195,7 +206,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Top 10 Productos Más Movidos</h3>
                     <div class="space-y-3">
                         @forelse($topProductos as $producto)
@@ -221,7 +232,7 @@
 
             {{-- Productos por categoría --}}
             <div class="grid grid-cols-1 gap-6">
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Productos por Categoría</h3>
                     <div style="position: relative; height: 250px; width: 100%;">
                         <canvas id="categoriaChart"></canvas>

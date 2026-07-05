@@ -14,7 +14,7 @@
 
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
 
 </head>
 
@@ -46,5 +46,16 @@
     @endif
     @livewireScripts
 </body>
+@if (session('toast'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toast = @json(session('toast'));
+            Livewire.dispatch('toast', {
+                type: toast.type,
+                message: toast.message
+            });
+        });
+    </script>
+@endif
 
 </html>

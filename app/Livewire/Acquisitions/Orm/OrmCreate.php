@@ -13,12 +13,13 @@ use App\Models\Adn;
 use App\Models\Sitio;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class OrmCreate extends Component
 {
     use WithFileUploads;
 
-    // Datos del formulario
     public $descrip_orm = '';
     public $id_adn = '';
     public $id_sitio = '';
@@ -28,25 +29,18 @@ class OrmCreate extends Component
     public $archivo_orm = null;
     public $observacion_orm = '';
     public $items = [];
-
-    // --- CDC autocomplete ---
     public $cdc_busqueda = '';
     public $id_cdc = '';
     public $descripcion = '';
     public $cdc_sugerencias = [];
     public $mostrar_sugerencias_cdc = false;
-    // Guarda el texto exacto del CDC ya seleccionado, para detectar
-    // si el usuario lo modificó sin volver a elegir uno de la lista.
     protected $cdc_texto_seleccionado = '';
-
-    // --- Producto autocomplete ---
     public $producto_busqueda = '';
     public $productos_sugeridos = [];
     public $mostrar_sugerencias = false;
 
     public $generando_orm = false;
 
-    // Mínimo de caracteres antes de consultar la BD (rendimiento con +1000 registros)
     const MIN_CHARS_CDC = 2;
     const MIN_CHARS_PRODUCTO = 3;
 

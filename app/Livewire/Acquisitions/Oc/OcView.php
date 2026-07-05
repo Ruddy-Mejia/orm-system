@@ -6,7 +6,9 @@ use Livewire\Component;
 use App\Models\Oc;
 use App\Models\DetOrm;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class OcView extends Component
 {
     public $oc;

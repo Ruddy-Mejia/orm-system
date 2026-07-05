@@ -2,19 +2,15 @@ import Alpine from 'alpinejs';
 import collapse from '@alpinejs/collapse';
 import persist from '@alpinejs/persist';
 import Swal from 'sweetalert2';
-// Font Awesome
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-// Chart.js
 import Chart from 'chart.js/auto';
 window.Chart = Chart;
 
-// window.Alpine = Alpine;
 Alpine.plugin(collapse);
 Alpine.plugin(persist);
 Alpine.start();
 
-// Configuración global de Toast personalizada
 const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -33,7 +29,6 @@ const Toast = Swal.mixin({
     }
 });
 
-// Colores personalizados
 const toastColors = {
     success: {
         background: '#22c55e',

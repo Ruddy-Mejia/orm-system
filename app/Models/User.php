@@ -32,70 +32,54 @@ class User extends Authenticatable
     }
     public function getPermissions()
     {
-        if (!$this->RolRel) {
+        if (!$this->rolRel) {
             return [];
         }
 
         $roles = config('roles.roles');
-        $roleName = $this->RolRel->guard_name; // Obtener el nombre del rol desde la relación
+        $roleName = $this->rolRel->guard_name;
 
         return $roles[$roleName]['permissions'] ?? [];
     }
 
-    // public function hasPermission($permission)
-    // {
-    //     if (!$this->RolRel) {
-    //         return false;
-    //     }
-
-    //     if ($this->RolRel->guard_name === 'super_admin') {
-    //         return true;
-    //     }
-
-    //     $permissions = $this->getPermissions();
-    //     return in_array($permission, $permissions) || in_array('*', $permissions);
-    // }
     public function hasPermission($permission)
-{
-    $roleName = $this->getRoleNameAttribute();
-    
-    if ($roleName === 'super_admin') {
-        return true;
-    }
-    
-    $permissions = $this->getPermissions();
-    
-    // Verificar si el permiso exacto existe
-    if (in_array($permission, $permissions)) {
-        return true;
-    }
-    
-    // Verificar si hay un wildcard (ej: bodegas.*)
-    foreach ($permissions as $perm) {
-        if (str_ends_with($perm, '.*')) {
-            $prefix = rtrim($perm, '.*');
-            if (str_starts_with($permission, $prefix)) {
-                return true;
+    {
+        $roleName = $this->getRoleNameAttribute();
+
+        if ($roleName === 'admin') {
+            return true;
+        }
+
+        $permissions = $this->getPermissions();
+
+        if (in_array($permission, $permissions)) {
+            return true;
+        }
+
+        foreach ($permissions as $perm) {
+            if (str_ends_with($perm, '.*')) {
+                $prefix = rtrim($perm, '.*');
+                if (str_starts_with($permission, $prefix)) {
+                    return true;
+                }
             }
         }
+
+        return false;
     }
-    
-    return false;
-}
 
     public function hasRole($role)
     {
-        return $this->RolRel && $this->RolRel->guard_name === $role;
+        return $this->rolRel && $this->rolRel->guard_name === $role;
     }
 
     public function hasAnyRole($roles)
     {
-        return $this->RolRel && in_array($this->RolRel->guard_name, (array) $roles);
+        return $this->rolRel && in_array($this->rolRel->guard_name, (array) $roles);
     }
 
-    // Método para obtener el nombre del rol
     public function getRoleNameAttribute()
     {
-        return $this->RolRel?->guard_name ?? 'Sin rol';
+        return $this->rolRel?->guard_name ?? 'Sin rol';
     }
 }

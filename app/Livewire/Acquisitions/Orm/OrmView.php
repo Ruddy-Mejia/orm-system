@@ -9,6 +9,9 @@ use App\Models\User;
 use App\Models\DetOrm;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Layout;
+
+#[Layout('layouts.app')]
 
 class OrmView extends Component
 {
