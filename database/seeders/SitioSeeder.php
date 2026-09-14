@@ -9,6 +9,13 @@ class SitioSeeder extends Seeder
 {
     public function run(): void
     {
-        Sitio::factory(5)->create();
+        $sitios = ['Sitio 32', 'Sitio 3', 'Sitio 35', 'Sitio 39'];
+
+        foreach ($sitios as $sitio) {
+            Sitio::firstOrCreate([
+                'descripcion' => $sitio,
+                'status' => true
+            ]);
+        }
     }
 }

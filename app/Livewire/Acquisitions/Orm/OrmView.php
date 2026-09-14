@@ -102,7 +102,7 @@ class OrmView extends Component
         // $this->buyers = User::where("rol", 2) CUANDO SE TENGAN BIEN DEFINIDOS
         $this->buyers = User::where("rol", 2)
             ->where("status", 1)
-            ->orderBy('name', 'asc')
+            ->with('personRel')
             ->get();
     }
 
@@ -164,8 +164,8 @@ class OrmView extends Component
             $orm->save();
             $this->cargarDatosORM();
 
-            $newBuyer = User::find($this->buyerId);
-            $this->dispatch('toast', type: 'success', message: "Comprador actualizado a: {$newBuyer->name}");
+            $newBuyer = User::with('personRel')->find($this->buyerId);
+            $this->dispatch('toast', type: 'success', message: "Comprador actualizado a: {$newBuyer->personRel->nombres} {$newBuyer->personRel->apellido_paterno} {$newBuyer->personRel->apellido_materno}");
         } catch (\Exception $e) {
             $this->dispatch('toast', type: 'error', message: "Error al actualizar el comprador");
         }

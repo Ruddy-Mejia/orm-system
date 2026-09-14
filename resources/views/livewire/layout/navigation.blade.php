@@ -111,10 +111,16 @@ new class extends Component {
                         class="absolute z-50 mt-14 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
                         style="display: none;">
                         <div class="py-1">
-                            <x-dropdown-link :href="route('users')">
+                            <x-dropdown-link :href="route('users.index')">
                                 {{ __('Usuarios') }}
                             </x-dropdown-link>
                         </div>
+                        <div class="py-1">
+                            <x-dropdown-link :href="route('personas.index')">
+                                {{ __('Trabajadores') }}
+                            </x-dropdown-link>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -125,7 +131,7 @@ new class extends Component {
                     <x-slot name="trigger">
                         <button
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-300 bg-gray-800 hover:text-white focus:outline-none transition ease-in-out duration-150">
-                            <div x-data="{{ json_encode(['name' => ucwords(mb_convert_case(auth()->user()->name, MB_CASE_TITLE, 'UTF-8'))]) }}" x-text="name"
+                            <div x-data="{{ json_encode(['name' => auth()->user()->personRel->nombres . ' ' . auth()->user()->personRel->apellido_paterno . ' (' . auth()->user()->rolRel->nombre . ')' ?? 'N/A']) }}" x-text="name"
                                 x-on:profile-updated.window="name = $event.detail.name"></div>
 
                             <div class="ms-1">
@@ -176,31 +182,30 @@ new class extends Component {
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            
+
             <x-responsive-nav-link :href="route('bodegas.index')" :active="request()->routeIs('bodegas.*')" wire:navigate>
                 {{ __('Bodegas') }}
             </x-responsive-nav-link>
-            
+
             <!-- Dropdown para Adquisiciones en responsive -->
             <div x-data="{ openAdquisiciones: false }">
-                <button @click="openAdquisiciones = !openAdquisiciones" 
-                        class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition duration-150 ease-in-out">
+                <button @click="openAdquisiciones = !openAdquisiciones"
+                    class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition duration-150 ease-in-out">
                     <span>{{ __('Adquisiciones') }}</span>
-                    <svg class="ml-2 h-4 w-4 transition-transform duration-200" 
-                         :class="{ 'rotate-180': openAdquisiciones }" 
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="ml-2 h-4 w-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': openAdquisiciones }" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                
-                <div x-show="openAdquisiciones" 
-                     x-transition:enter="transition ease-out duration-200"
-                     x-transition:enter-start="opacity-0 -translate-y-1"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100 translate-y-0"
-                     x-transition:leave-end="opacity-0 -translate-y-1"
-                     class="ml-4 space-y-1 border-l-2 border-gray-600 pl-2">
+
+                <div x-show="openAdquisiciones" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 -translate-y-1"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 translate-y-0"
+                    x-transition:leave-end="opacity-0 -translate-y-1"
+                    class="ml-4 space-y-1 border-l-2 border-gray-600 pl-2">
                     <x-responsive-nav-link :href="route('orm.index')" :active="request()->routeIs('orm.*')" wire:navigate>
                         {{ __('ORMs') }}
                     </x-responsive-nav-link>
@@ -209,27 +214,26 @@ new class extends Component {
                     </x-responsive-nav-link>
                 </div>
             </div>
-            
+
             <!-- Dropdown para Productos en responsive -->
             <div x-data="{ openProductos: false }">
-                <button @click="openProductos = !openProductos" 
-                        class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition duration-150 ease-in-out">
+                <button @click="openProductos = !openProductos"
+                    class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition duration-150 ease-in-out">
                     <span>{{ __('Productos') }}</span>
-                    <svg class="ml-2 h-4 w-4 transition-transform duration-200" 
-                         :class="{ 'rotate-180': openProductos }" 
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="ml-2 h-4 w-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': openProductos }" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                
-                <div x-show="openProductos" 
-                     x-transition:enter="transition ease-out duration-200"
-                     x-transition:enter-start="opacity-0 -translate-y-1"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100 translate-y-0"
-                     x-transition:leave-end="opacity-0 -translate-y-1"
-                     class="ml-4 space-y-1 border-l-2 border-gray-600 pl-2">
+
+                <div x-show="openProductos" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 -translate-y-1"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 translate-y-0"
+                    x-transition:leave-end="opacity-0 -translate-y-1"
+                    class="ml-4 space-y-1 border-l-2 border-gray-600 pl-2">
                     <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')" wire:navigate>
                         {{ __('Productos') }}
                     </x-responsive-nav-link>
@@ -238,28 +242,29 @@ new class extends Component {
                     </x-responsive-nav-link>
                 </div>
             </div>
-            
-            <div x-data="{ openRrhh: false }">
-                <button @click="openRrhh = !openRrhh" 
-                        class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition duration-150 ease-in-out">
+
+            <div x-data="{ openrrhh: false }">
+                <button @click="openrrhh = !openrrhh"
+                    class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition duration-150 ease-in-out">
                     <span>{{ __('RRHH') }}</span>
-                    <svg class="ml-2 h-4 w-4 transition-transform duration-200" 
-                         :class="{ 'rotate-180': openRrhh }" 
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="ml-2 h-4 w-4 transition-transform duration-200" :class="{ 'rotate-180': openrrhh }"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                
-                <div x-show="openRrhh" 
-                     x-transition:enter="transition ease-out duration-200"
-                     x-transition:enter-start="opacity-0 -translate-y-1"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100 translate-y-0"
-                     x-transition:leave-end="opacity-0 -translate-y-1"
-                     class="ml-4 space-y-1 border-l-2 border-gray-600 pl-2">
-                    <x-responsive-nav-link :href="route('users')" :active="request()->routeIs('users')" wire:navigate>
+
+                <div x-show="openrrhh" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 -translate-y-1"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 translate-y-0"
+                    x-transition:leave-end="opacity-0 -translate-y-1"
+                    class="ml-4 space-y-1 border-l-2 border-gray-600 pl-2">
+                    <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')" wire:navigate>
                         {{ __('Usuarios') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('personas.index')" :active="request()->routeIs('person.*')" wire:navigate>
+                        {{ __('Trabajadores') }}
                     </x-responsive-nav-link>
                 </div>
             </div>

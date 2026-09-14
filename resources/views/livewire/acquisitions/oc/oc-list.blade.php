@@ -84,23 +84,23 @@
                             <td class="px-4 py-3 border-b">
                                 <div class="flex items-center gap-2">
                                     <div class="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-xs">
-                                        {{ $oc->ormRel->compradorRel ? substr($oc->ormRel->compradorRel->name, 0, 1) : 'N' }}
+                                        {{ $oc->ormRel->compradorRel ? substr($oc->ormRel->compradorRel->personRel->nombres, 0, 1) : 'N' }}
                                     </div>
-                                    <span>{{ $oc->ormRel->compradorRel->name ?? 'No asignado' }}</span>
+                                    <span>{{ $oc->ormRel->compradorRel->personRel->nombres . ' ' . $oc->ormRel->compradorRel->personRel->apellido_paterno ?? 'No asignado' }}</span>
                                 </div>
                             </td>
                             <td class="px-4 py-3 border-b">
-                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs whitespace-nowrap">
                                     {{ $oc->proveedorRel->razon_social }}
                                 </span>
                             </td>
                             <td class="px-4 py-3 border-b">
-                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs whitespace-nowrap">
                                     {{ $oc->ormRel->cdcRel->cdc }}
                                 </span>
                             </td>
                             <td class="px-4 py-3 border-b">
-                                <span class="px-2 py-1 bg-gray-200 text-gray-800 rounded-full text-xs">
+                                <span class="px-2 py-1 bg-gray-200 text-gray-800 rounded-full text-xs whitespace-nowrap">
                                     {{ $oc->formapagoRel->descripcion }}
                                 </span>
                             </td>
@@ -108,7 +108,7 @@
                                 {{ $oc->ormRel->created_at->format('d/m/Y') }}
                             </td>
                             <td class="px-4 py-3 border-b">
-                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium whitespace-nowrap">
                                     $ {{ number_format($oc->monto_total, 0, ',', '.') }}
                                 </span>
                             </td>

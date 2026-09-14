@@ -25,6 +25,6 @@ class BodegaSeeder extends Seeder
         }
         
         // Bodegas adicionales con factory
-        Bodega::factory(3)->create();
+        Bodega::factory(1)->create();
     }
 }

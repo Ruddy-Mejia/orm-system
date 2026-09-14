@@ -65,7 +65,7 @@
                             </div>
                             <div class="bg-slate-100 p-3 rounded">
                                 <span class="font-bold text-gray-700">Solicitante</span>
-                                <p class="text-gray-900">{{ $orm->responsableRel->name }}</p>
+                                <p class="text-gray-900">{{ $orm->responsableRel->personRel->nombres . ' ' . $orm->responsableRel->personRel->apellido_paterno ?? 'No asignado' }}</p>
                             </div>
     
                             @if ($orm->patente)
@@ -90,7 +90,7 @@
     
                                         @foreach ($buyers as $buyer)
                                             <option value="{{ $buyer->id }}">
-                                                {{ $buyer->name }}
+                                                {{ $buyer->personRel->nombres . ' ' . $buyer->personRel->apellido_paterno . ' ' . $buyer->personRel->apellido_materno }}
                                                 @if ($orm->comprador == $buyer->id)
                                                     (Actual)
                                                 @endif
@@ -272,9 +272,8 @@
                                             @if ($productosSeleccionadosCount > 0)
                                                 <button wire:click="generarOC" wire:loading.attr="disabled"
                                                     class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 inline-flex items-center gap-2">
-                                                    <span wire:loading.remove>Generar OC
+                                                    <span>Generar OC
                                                         ({{ $productosSeleccionadosCount }})</span>
-                                                    <span wire:loading>Generando...</span>
                                                 </button>
                                             @else
                                                 <button disabled

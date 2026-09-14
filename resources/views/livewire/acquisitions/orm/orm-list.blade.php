@@ -27,7 +27,7 @@
                             </svg>
                         </div>
                         <input type="text" 
-                               wire:model.live.debounce.300ms="search" 
+                               wire:model.live="search" 
                                placeholder="Buscar ORM..."
                                class="w-full pl-10 px-3 py-2 border rounded-lg">
                     </div>
@@ -73,16 +73,16 @@
                                 </a>
                             </td>
                             <td class="px-4 py-3 border-b">
-                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs whitespace-nowrap">
                                     {{ $orden->cdcRel->cdc }}
                                 </span>
                             </td>
                             <td class="px-4 py-3 border-b">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-xs">
-                                        {{ $orden->responsableRel ? substr($orden->responsableRel->name, 0, 1) : 'N' }}
+                                    <div class="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-xs whitespace-nowrap">
+                                        {{ $orden->responsableRel ? substr($orden->responsableRel->personRel->nombres, 0, 1) : 'N' }}
                                     </div>
-                                    <span>{{ $orden->responsableRel->name ?? 'No asignado' }}</span>
+                                    <span>{{ $orden->responsableRel->personRel->nombres . ' ' . $orden->responsableRel->personRel->apellido_paterno ?? 'No asignado' }}</span>
                                 </div>
                             </td>
                             <td class="px-4 py-3 border-b text-sm">
@@ -100,7 +100,7 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 border-b">
-                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs whitespace-nowrap">
                                     {{ strtoupper($orden->sitioRel->descripcion) }}
                                 </span>
                             </td>

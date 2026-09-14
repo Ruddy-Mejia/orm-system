@@ -12,20 +12,21 @@ class DatabaseSeeder extends Seeder
             ConvenioSeeder::class,
             FormaPagoSeeder::class,
             ProveedorSeeder::class,
+            SitioSeeder::class,
+            PersonSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
             CdcSeeder::class,
             AdnSeeder::class,
-            SitioSeeder::class,
             CiudadSeeder::class,
             CategoriaSeeder::class,
             BodegaSeeder::class,
             ProductoSeeder::class,
             BodegaProductoSeeder::class,
+            MovimientoBodegaSeeder::class,
             OrmSeeder::class,
-            DetOrmSeeder::class,
+            // DetOrmSeeder::class,
             OCSeeder::class,
-            MovimientoBodegaSeeder::class
         ]);
     }
 }

@@ -64,10 +64,10 @@
                     @forelse($products as $product)
                         <tr class="hover:bg-gray-50 transition" wire:key="product-{{ $product->id }}">
                             <td class="px-4 py-3 border-b text-sm text-gray-600">{{ $product->id }}</td>
-                            <td class="px-4 py-3 border-b text-sm font-medium text-gray-800">{{ $product->nombre }}</td>
+                            <td class="px-4 py-3 border-b text-sm font-medium text-gray-800 whitespace-nowrap">{{ $product->nombre }}</td>
                             <td class="px-4 py-3 border-b text-sm text-gray-600">{{ $product->unidad }}</td>
                             <td class="px-4 py-3 border-b text-sm text-gray-600">
-                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs whitespace-nowrap">
                                     {{ $product->categoriaRel->nombre ?? 'Sin categoría' }}
                                 </span>
                             </td>

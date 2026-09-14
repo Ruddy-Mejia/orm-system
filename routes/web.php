@@ -12,18 +12,42 @@ use App\Http\Controllers\PrintOrmController;
 use App\Livewire\Acquisitions\Oc\OcCreate;
 use App\Livewire\Acquisitions\Oc\OcList;
 use App\Livewire\Acquisitions\Orm\OrmView;
-use App\Livewire\RRHH\Users\UserList;
+use App\Livewire\rrhh\Users\UserList;
 use App\Livewire\Bodega\Index;
 use App\Livewire\Bodega\Ingreso;
 use App\Livewire\Bodega\Traspaso;
 use App\Livewire\Bodega\Show;
+use App\Livewire\Test;
 use App\Livewire\Dashboard;
+use App\Livewire\Rrhh\Person\PersonList;
+use App\Livewire\Rrhh\Person\PersonCreate;
+use App\Livewire\Rrhh\Person\PersonEdit;
+use App\Livewire\RRHH\Users\UserCreate;
+use App\Livewire\RRHH\Users\UserEdit;
+
+// Route::get('/person', PersonList::class)->name('personas.index');
+// Route::get('/personas', PersonList::class)->name('personas.index');
+// Route::get('/personas/crear', PersonCreate::class)->name('personas.create');
+// Route::get('/personas/editar/{id}', PersonEdit::class)->name('personas.edit');
+
 
 Route::view('/', 'welcome');
 
 
+
 Route::middleware(['auth', 'active.user'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard')->middleware('permission:dashboard');
+    
+    Route::prefix('usuarios')->name('users.')->group(function () {
+        Route::get('/', UserList::class)->name('index')->middleware('permission:usuarios.index');
+        Route::get('/crear', UserCreate::class)->name('create')->middleware('permission:usuarios.create');
+        Route::get('/editar/{id}', UserEdit::class)->name('edit')->middleware('permission:usuarios.edit');
+    });
+    Route::prefix('personas')->name('personas.')->group(function () {
+        Route::get('/', PersonList::class)->name('index')->middleware('permission:personas.index');
+        Route::get('/crear', PersonCreate::class)->name('create')->middleware('permission:personas.create');
+        Route::get('/editar/{id}', PersonEdit::class)->name('edit')->middleware('permission:personas.edit');
+    });
     
     Route::prefix('bodegas')->name('bodegas.')->group(function () {
         Route::get('/ingreso', Ingreso::class)->name('ingreso')->middleware('permission:bodegas.ingreso');
@@ -44,8 +68,6 @@ Route::middleware(['auth', 'active.user'])->group(function () {
         Route::get('/', OrmList::class)->name('index')->middleware('permission:orm.index');
         Route::get('/print/{id}', [PrintOrmController::class, 'print'])->name('print')->middleware('permission:orm.print');
     });
-
-    Route::get('/users', UserList::class)->name('users')->middleware('permission:users.index');
 
     Route::prefix('productos')->name('products.')->group(function () {
         Route::get('/', ProductIndex::class)->name('index')->middleware('permission:products.index');

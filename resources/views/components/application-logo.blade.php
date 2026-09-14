@@ -1,3 +1,3 @@
-<div class="w-10">
+<div class="w-12">
     <img src="{{ asset('storage/logo.png') }}" alt="logo"  >
 </div>

@@ -12,13 +12,13 @@ class User extends Authenticatable
     protected $table = 'tbl_users';
 
     protected $fillable = [
-        'name',
         'email',
         'password',
         'status',
         'rol',
         'foto_perfil',
-        'firma'
+        'firma',
+        'person_id',
     ];
 
     protected $hidden = [
@@ -29,6 +29,10 @@ class User extends Authenticatable
     public function rolRel(): BelongsTo
     {
         return $this->belongsTo(Role::class, 'rol');
+    }
+    public function personRel(): BelongsTo
+    {
+        return $this->belongsTo(Person::class, 'person_id');
     }
     public function getPermissions()
     {

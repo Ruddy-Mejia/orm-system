@@ -13,6 +13,7 @@ class OrmFactory extends Factory
 {
     protected $model = Orm::class;
     protected static $secuencia = 0;
+    
     public function definition(): array
     {
         $year = date('Y');
@@ -25,11 +26,12 @@ class OrmFactory extends Factory
         
         return [
             'orm' => 'ORM' . $nuevoId . '-' . $year,
-            'responsable' => User::factory(),
-            'comprador' => User::factory(),
-            'cdc' => Cdc::factory(),
-            'adn' => Adn::factory(),
-            'sitio' => Sitio::factory(),
+            // Usar usuarios existentes en lugar de crear nuevos
+            'responsable' => User::inRandomOrder()->first()?->id ?? 1,
+            'comprador' => User::inRandomOrder()->first()?->id ?? 1,
+            'cdc' => Cdc::inRandomOrder()->first()?->id ?? 1,
+            'adn' => Adn::inRandomOrder()->first()?->id ?? 1,
+            'sitio' => Sitio::inRandomOrder()->first()?->id ?? 1,
             'status' => $this->faker->boolean(80),
             'terceros' => $this->faker->boolean(30),
             'tipo' => $this->faker->randomElement(['Administrativa', 'OTI', 'Faena', 'Mantenimiento']),

@@ -4,6 +4,7 @@
 namespace App\Livewire\Acquisitions\Orm;
 
 use App\Models\Producto;
+use App\Helpers\HistorialHelper;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Orm;
@@ -132,7 +133,7 @@ class OrmCreate extends Component
     }
 
     public function seleccionarProducto($id)
-    {        
+    {
         $producto = Producto::find($id);
 
         if ($producto) {
@@ -167,6 +168,61 @@ class OrmCreate extends Component
     }
 
 
+    // public function save()
+    // {
+    //     $this->validate();
+
+    //     $this->generando_orm = true;
+
+    //     DB::beginTransaction();
+
+    //     try {
+    //         $numeroOrm = Orm::generarNumeroOrm();
+
+    //         $archivoPath = null;
+    //         if ($this->archivo_orm) {
+    //             $extension = $this->archivo_orm->getClientOriginalExtension();
+    //             $nombreArchivo = 'orm_' . str_replace('-', '_', $numeroOrm) . '.' . $extension;
+    //             $archivoPath = $this->archivo_orm->storeAs('orm_documents', $nombreArchivo, 'public');
+    //         }
+
+    //         Orm::create([
+    //             'orm' => $numeroOrm,
+    //             'responsable' => Auth::id(),
+    //             'comprador' => null,
+    //             'cdc' => $this->id_cdc,
+    //             'adn' => $this->id_adn,
+    //             'sitio' => $this->id_sitio,
+    //             'status' => 0,
+    //             'terceros' => $this->serv3ros,
+    //             'tipo' => $this->tipo,
+    //             'descripcion' => $this->descrip_orm,
+    //             'patente' => strtoupper($this->patente) ? : null,
+    //             'archivo' => $archivoPath,
+    //             'obs_orm' => strtoupper($this->observacion_orm),
+    //         ]);
+
+    //         foreach ($this->items as $item) {
+    //             DetOrm::create([
+    //                 'orm' => $numeroOrm,
+    //                 'cantidad' => $item['cantidad'],
+    //                 'detalle' => $item['extra'] ?? '',
+    //                 'producto' => $item['id'],
+    //             ]);
+    //         }
+
+    //         DB::commit();
+
+    //         $this->dispatch('toast', type: 'success', message: 'ORM creado exitosamente con número: ' . $numeroOrm);              
+
+    //         // return redirect()->route('view', $numeroOrm);//<---------------------------------
+
+    //     } catch (\Throwable $e) {
+    //         DB::rollBack();
+    //         $this->generando_orm = false;
+    //         $this->dispatch('toast', type: 'error', message: 'Error al crear ORM: ' . $e->getMessage());            
+    //     }
+    // }
     public function save()
     {
         $this->validate();
@@ -185,7 +241,8 @@ class OrmCreate extends Component
                 $archivoPath = $this->archivo_orm->storeAs('orm_documents', $nombreArchivo, 'public');
             }
 
-            Orm::create([
+            // Datos del ORM a crear
+            $datosOrm = [
                 'orm' => $numeroOrm,
                 'responsable' => Auth::id(),
                 'comprador' => null,
@@ -196,30 +253,66 @@ class OrmCreate extends Component
                 'terceros' => $this->serv3ros,
                 'tipo' => $this->tipo,
                 'descripcion' => $this->descrip_orm,
-                'patente' => strtoupper($this->patente) ? : null,
+                'patente' => strtoupper($this->patente) ?: null,
                 'archivo' => $archivoPath,
                 'obs_orm' => strtoupper($this->observacion_orm),
-            ]);
+            ];
 
+            // Crear el ORM
+            $orm = Orm::create($datosOrm);
+
+            // Crear los detalles del ORM
+            $detallesCreados = [];
             foreach ($this->items as $item) {
-                DetOrm::create([
+                $detalle = DetOrm::create([
                     'orm' => $numeroOrm,
                     'cantidad' => $item['cantidad'],
                     'detalle' => $item['extra'] ?? '',
                     'producto' => $item['id'],
                 ]);
+                $detallesCreados[] = $detalle->id;
             }
 
             DB::commit();
-            
-            $this->dispatch('toast', type: 'success', message: 'ORM creado exitosamente con número: ' . $numeroOrm);              
 
-            // return redirect()->route('view', $numeroOrm);//<---------------------------------
+            $this->generando_orm = false;
+
+            // Registrar en el historial - CREACIÓN EXITOSA
+            HistorialHelper::created(
+                'tbl_orm',
+                $orm->id,
+                [
+                    'orm' => $datosOrm,
+                    'cantidad_detalles' => count($detallesCreados),
+                    'detalles_ids' => $detallesCreados,
+                ],
+                'Se creó el ORM: ' . $numeroOrm . ' con ' . count($detallesCreados) . ' detalles'
+            );
+
+            $this->dispatch('toast', type: 'success', message: 'ORM creado exitosamente con número: ' . $numeroOrm);
+
+            // return redirect()->route('view', $numeroOrm);
 
         } catch (\Throwable $e) {
             DB::rollBack();
             $this->generando_orm = false;
-            $this->dispatch('toast', type: 'error', message: 'Error al crear ORM: ' . $e->getMessage());            
+
+            // Registrar el error en el historial
+            HistorialHelper::error(
+                'Error al crear ORM: ' . $e->getMessage(),
+                'tbl_orm',
+                null,
+                [
+                    'numeroOrm_intentado' => $numeroOrm ?? null,
+                    'datos_intentados' => $datosOrm ?? null,
+                    'items' => $this->items ?? [],
+                    'exception' => $e->getMessage(),
+                    'linea' => $e->getLine(),
+                    'archivo' => $e->getFile(),
+                ]
+            );
+
+            $this->dispatch('toast', type: 'error', message: 'Error al crear ORM: ' . $e->getMessage());
         }
     }
 

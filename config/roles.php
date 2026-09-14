@@ -38,6 +38,8 @@ return [
                 'reportes.inventario',
                 'products.*',
                 'categories.*',
+                'orm.*',
+                'oc.*',
             ],
         ],
 

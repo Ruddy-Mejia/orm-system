@@ -10,6 +10,6 @@ class DetOrmSeeder extends Seeder
 {
     public function run(): void
     {
-        DetOrm::factory(50)->create();
+        DetOrm::factory(100)->create();
     }
 }

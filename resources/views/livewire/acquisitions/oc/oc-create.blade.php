@@ -239,7 +239,6 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Archivo Factura</label>
                         <input type="file" wire:model="path_factura" 
                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <div wire:loading wire:target="path_factura" class="text-sm text-blue-600 mt-1">Subiendo...</div>
                         @error('path_factura') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
@@ -247,7 +246,6 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Archivo Pago</label>
                         <input type="file" wire:model="path_pago" 
                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <div wire:loading wire:target="path_pago" class="text-sm text-blue-600 mt-1">Subiendo...</div>
                         @error('path_pago') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -271,7 +269,7 @@
                         wire:loading.attr="disabled"
                         class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded transition duration-200 shadow-md shadow-blue-500/25 hover:shadow-lg">
                     <span wire:loading.remove>Crear OC</span>
-                    <span wire:loading>Creando...</span>
+                    <span wire:loading>Espere...</span>
                 </button>
             </div>
         </form>

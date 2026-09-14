@@ -10,12 +10,10 @@ class SitioFactory extends Factory
     {
         return [
             'descripcion' => $this->faker->randomElement([
-                'Oficina Central',
-                'Planta Norte',
-                'Planta Sur',
-                'Centro de Distribución',
-                'Mina El Tesoro',
-                'Puerto de Embarque'
+                'Sitio 32',
+                'Sitio 3',
+                'Sitio 35',
+                'Sitio 39',
             ]),
             'status' => $this->faker->boolean(90),
         ];

@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::create('tbl_users', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
             $table->string('email')->unique();
             $table->string('password');
             $table->boolean('status')->default(false);
             $table->foreignId('rol')->constrained('tbl_roles')->default(5);
             $table->string('foto_perfil')->nullable();
             $table->string('firma')->nullable();
+            $table->foreignId('person_id')->constrained('tbl_person');
             $table->rememberToken();
             $table->timestamps();
         });

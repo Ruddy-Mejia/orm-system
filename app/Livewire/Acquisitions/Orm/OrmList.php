@@ -45,13 +45,47 @@ class OrmList extends Component
         $orden = Orm::find($id);
         $orden->en_atencion = !$orden->en_atencion;
         $orden->save();
-        
+
         $this->dispatch('toast', type: 'success', message: 'Estado actualizado correctamente');
     }
 
     public function render()
     {
-        $ordenes = Orm::with(['cdcRel', 'adnRel', 'sitioRel', 'responsableRel', 'compradorRel'])->orderBy($this->sortField, $this->sortDirection)
+        // $ordenes = Orm::with(['cdcRel', 'adnRel', 'sitioRel', 'responsableRel', 'compradorRel'])->orderBy($this->sortField, $this->sortDirection)
+        //     ->paginate(15);
+        $ordenes = Orm::with(['cdcRel', 'adnRel', 'sitioRel', 'responsableRel', 'compradorRel'])
+            ->when($this->search, function ($query) {
+                $search = '%' . $this->search . '%';
+                $query->where(function ($q) use ($search) {
+                    $q->where('orm', 'like', $search)
+                        ->orWhere('descripcion', 'like', $search)
+                        ->orWhere('patente', 'like', $search)
+                        ->orWhere('tipo', 'like', $search)
+                        ->orWhere('prioridad', 'like', $search)
+                        ->orWhereHas('cdcRel', function ($subQuery) use ($search) {
+                            $subQuery->where('cdc', 'like', $search);
+                        })
+                        ->orWhereHas('adnRel', function ($subQuery) use ($search) {
+                            $subQuery->where('adn', 'like', $search)
+                                ->orWhere('descripcion', 'like', $search);
+                        })
+                        ->orWhereHas('sitioRel', function ($subQuery) use ($search) {
+                            $subQuery->where('descripcion', 'like', $search);
+                        })
+                        ->orWhereHas('responsableRel', function ($subQuery) use ($search) {
+                            $subQuery->whereHas('personRel', function ($personQuery) use ($search) {
+                                $personQuery->where('nombres', 'like', $search)
+                                    ->orWhere('apellido_paterno', 'like', $search)
+                                    ->orWhere('apellido_materno', 'like', $search)
+                                    ->orWhere('rut', 'like', $search)
+                                    ->orWhere('email', 'like', $search)
+                                    ->orWhereRaw("CONCAT(nombres, ' ', apellido_paterno) LIKE ?", [$search])
+                                    ->orWhereRaw("CONCAT(nombres, ' ', apellido_paterno, ' ', apellido_materno) LIKE ?", [$search]);
+                            });
+                        });
+                });
+            })
+            ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(15);
         return view('livewire.acquisitions.orm.orm-list', [
             'ordenes' => $ordenes,

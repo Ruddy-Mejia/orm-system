@@ -15,53 +15,53 @@ class UserSeeder extends Seeder
 
         $usuarios = [
             [
-                'name' => 'Sin asignar',
-                'email' => 'comprador@sistema.com',
-                'password' => 'comprador123',
-                'status' => true,
-                'rol' => 'Comprador',
-            ],
-            [
-                'name' => 'Administrador',
                 'email' => 'rmejiam.dev@gmail.com',
                 'password' => '12345678',
                 'status' => true,
                 'rol' => 'Administrador',
+                'person_id' => 1,
             ],
             [
-                'name' => 'Luis Meza',
+                'email' => 'comprador@sistema.com',
+                'password' => 'comprador123',
+                'status' => true,
+                'rol' => 'Comprador',
+                'person_id' => 2,
+            ],
+            [
                 'email' => 'comprador@example.com',
                 'password' => '12345678',
                 'status' => true,
                 'rol' => 'Comprador',
+                'person_id' => 3,
             ],
             [
-                'name' => 'Carla López',
                 'email' => 'jefebodega@example.com',
                 'password' => '12345678',
                 'status' => true,
                 'rol' => 'Jefe de Bodega',
+                'person_id' => 4,
             ],
             [
-                'name' => 'Daniel Torres',
                 'email' => 'user@example.com',
                 'password' => '12345678',
                 'status' => true,
                 'rol' => 'Perfil básico',
+                'person_id' => 5,
             ],
         ];
 
         foreach ($usuarios as $usuario) {
             User::create([
-                'name' => $usuario['name'],
                 'email' => $usuario['email'],
                 'password' => Hash::make($usuario['password']),
                 'status' => $usuario['status'],
                 'rol' => $roles[$usuario['rol']],
                 'foto_perfil' => null,
                 'firma' => null,
+                'person_id' => $usuario['person_id'],
             ]);
         }
-        User::factory(10)->create();
+        // User::factory(10)->create();
     }
 }

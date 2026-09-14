@@ -45,7 +45,7 @@ class OCSeeder extends Seeder
             DetOrm::factory(20)->create();
         }
         
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             OC::create([
                 'oc' => Oc::generarNumeroOc(),
                 'proveedor' => Proveedores::inRandomOrder()->first()->id,

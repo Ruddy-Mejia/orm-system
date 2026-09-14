@@ -7,6 +7,7 @@ use App\Models\Bodega;
 use App\Models\MovimientoBodega;
 use App\Models\Producto;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MovimientoBodegaFactory extends Factory
@@ -19,15 +20,15 @@ class MovimientoBodegaFactory extends Factory
         $bodega = Bodega::inRandomOrder()->first() ?? Bodega::factory()->create();
         $producto = Producto::inRandomOrder()->first() ?? Producto::factory()->create();
         $usuario = User::inRandomOrder()->first() ?? User::factory()->create();
-        
+
         // Tipos de movimiento
         $tipos = ['ingreso', 'egreso', 'traspaso_salida', 'traspaso_entrada'];
         $tipo = $this->faker->randomElement($tipos);
-        
+
         // Determinar bodegas origen/destino según el tipo
         $bodegaOrigenId = null;
         $bodegaDestinoId = null;
-        
+
         if ($tipo === 'traspaso_salida') {
             $bodegaOrigenId = $bodega->id;
             $bodegaDestinoId = Bodega::where('id', '!=', $bodega->id)
@@ -39,20 +40,20 @@ class MovimientoBodegaFactory extends Factory
                 ->inRandomOrder()
                 ->first()?->id ?? Bodega::factory()->create()->id;
         }
-        
+
         // Cantidades (stock anterior y nuevo)
         $stockAnterior = $this->faker->randomFloat(2, 0, 500);
         $cantidad = $this->faker->randomFloat(2, 1, 100);
-        
+
         // Calcular stock nuevo según el tipo
-        $stockNuevo = match($tipo) {
+        $stockNuevo = match ($tipo) {
             'ingreso' => $stockAnterior + $cantidad,
             'egreso' => max(0, $stockAnterior - $cantidad),
             'traspaso_salida' => max(0, $stockAnterior - $cantidad),
             'traspaso_entrada' => $stockAnterior + $cantidad,
             default => $stockAnterior + $cantidad,
         };
-        
+
         return [
             'bodega_id' => $bodega->id,
             'producto_id' => $producto->id,
@@ -65,8 +66,11 @@ class MovimientoBodegaFactory extends Factory
             'usuario_id' => $usuario->id,
             'bodega_origen_id' => $bodegaOrigenId,
             'bodega_destino_id' => $bodegaDestinoId,
-            'created_at' => $this->faker->dateTimeBetween('-6 months', 'now'),
-            'updated_at' => $this->faker->dateTimeBetween('-6 months', 'now'),
+
+            'created_at' => Carbon::now()->subDays(rand(1, 180))->format('Y-m-d H:i:s'),
+            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            // 'created_at' => $this->faker->dateTimeBetween('-6 months', 'now'),
+            // 'updated_at' => $this->faker->dateTimeBetween('-6 months', 'now'),
         ];
     }
 
@@ -80,7 +84,7 @@ class MovimientoBodegaFactory extends Factory
             $producto = Producto::inRandomOrder()->first() ?? Producto::factory()->create();
             $stockAnterior = $this->faker->randomFloat(2, 0, 500);
             $cantidad = $this->faker->randomFloat(2, 1, 100);
-            
+
             return [
                 'bodega_id' => $bodega->id,
                 'producto_id' => $producto->id,
@@ -104,7 +108,7 @@ class MovimientoBodegaFactory extends Factory
             $producto = Producto::inRandomOrder()->first() ?? Producto::factory()->create();
             $stockAnterior = $this->faker->randomFloat(2, 10, 500);
             $cantidad = $this->faker->randomFloat(2, 1, min(100, $stockAnterior));
-            
+
             return [
                 'bodega_id' => $bodega->id,
                 'producto_id' => $producto->id,
@@ -131,7 +135,7 @@ class MovimientoBodegaFactory extends Factory
             $producto = Producto::inRandomOrder()->first() ?? Producto::factory()->create();
             $stockAnterior = $this->faker->randomFloat(2, 10, 500);
             $cantidad = $this->faker->randomFloat(2, 1, min(100, $stockAnterior));
-            
+
             return [
                 'bodega_id' => $bodegaOrigen->id,
                 'producto_id' => $producto->id,
@@ -158,7 +162,7 @@ class MovimientoBodegaFactory extends Factory
             $producto = Producto::inRandomOrder()->first() ?? Producto::factory()->create();
             $stockAnterior = $this->faker->randomFloat(2, 0, 500);
             $cantidad = $this->faker->randomFloat(2, 1, 100);
-            
+
             return [
                 'bodega_id' => $bodegaDestino->id,
                 'producto_id' => $producto->id,

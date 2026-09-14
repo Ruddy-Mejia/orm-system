@@ -293,13 +293,13 @@
             <div class="flex-between">
                 <div>
                     <img src="{{ asset('storage/logo.png') }}" alt="Imagen" width="100px">
-                    <p class="header-subtitle">{{ config('app.company') }}</p>
-                    <p class="header-subtitle" style="font-size: 10px"> {{"DIRECCIÓN: " .  config('app.address') }}<br>
-                        {{ config('app.email') }}</p>
+                    <p class="header-subtitle">Mi Empresa</p>
+                    <p class="header-subtitle" style="font-size: 10px">Ecuador 2289<br>
+                        rmejiam.dev@gmail.com</p>
                 </div>
                 <div>
                     <p class="title1">
-                        <br><br>{{ config('app.giro') }}<br><br>R.U.T.: {{ config('app.rut') }}
+                        <br><br>{{ config('app.giro') }}<br><br>R.U.T.: 123456789-0<br><br>Teléfono: +56 9 1234 5678
                     </p>
                     <br>
                     <div style="font-size: 15px; font-style: italic; text-align: center;" class="font-bold">ORDEN DE
@@ -308,7 +308,7 @@
                     </div>
                 </div>
                 <div>
-                    <div style="display: flex; align-items: center; height: 125px; text-decoration: underline; font-style: italic; color:#d33c43"
+                    <div style="display: flex; align-items: center; height: 100px; color:#d33c43; font-size: 18px;"
                         class="font-bold">
                         {{ $orm->orm }}
                     </div>
@@ -355,7 +355,7 @@
             <div class="info-row">
                 <div class="info-label">Solicitante</div>
                 <div class="info-value">
-                    {{ $orm->responsableRel->name ?? 'No registrado' }}
+                    {{ $orm->responsableRel->personRel->nombres . ' ' . $orm->responsableRel->personRel->apellido_paterno . ' ' . $orm->responsableRel->personRel->apellido_materno ?? 'No registrado' }}
                 </div>
             </div>
 

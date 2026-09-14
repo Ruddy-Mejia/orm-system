@@ -13,13 +13,13 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'password' => Hash::make('password'),
             'status' => $this->faker->boolean(80),
             'rol' => Role::inRandomOrder()->first()->id,
             'foto_perfil' => null,
             'firma' => null,
+            'person_id' => 1, // You can change this to a random person ID if needed
             'remember_token' => $this->faker->uuid(),
         ];
     }

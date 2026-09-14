@@ -11,6 +11,6 @@ class MovimientoBodegaSeeder extends Seeder
     public function run(): void
     {
         // Crear movimientos aleatorios
-        MovimientoBodega::factory(50)->create();
+        MovimientoBodega::factory(1000)->create();
     }
 }

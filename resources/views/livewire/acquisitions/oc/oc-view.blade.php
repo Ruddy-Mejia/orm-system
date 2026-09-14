@@ -19,7 +19,7 @@
 
                     <div class="bg-slate-100 p-4 rounded-lg">
                         <label class="text-xs text-gray-500 uppercase font-bold">Responsable</label>
-                        <p class="text-lg font-semibold">{{ $oc->ormRel->responsableRel->name ?? 'N/A' }}</p>
+                        <p class="text-lg font-semibold">{{ $oc->ormRel->responsableRel->personRel->nombres . ' ' . $oc->ormRel->responsableRel->personRel->apellido_paterno ?? 'N/A' }}</p>
                     </div>
 
                     <div class="bg-slate-100 p-4 rounded-lg">
